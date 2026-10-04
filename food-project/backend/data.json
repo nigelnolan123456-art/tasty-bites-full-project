@@ -1,0 +1,120 @@
+{
+  "config": {
+    "name": "Tasty Bites",
+    "heading": "Hungry? Pick your favourite.",
+    "sub": "Fresh food, made to order. Sold-out items are greyed out.",
+    "accent": "#e4572e",
+    "cur": "₹",
+    "foot": "© Tasty Bites · Front-end demo"
+  },
+  "items": [
+    {
+      "id": "i1",
+      "n": "Classic Burger",
+      "p": 199,
+      "e": "🍔",
+      "d": "Juicy patty, cheese, lettuce, house sauce.",
+      "s": true,
+      "o": 1
+    },
+    {
+      "id": "i2",
+      "n": "Margherita Pizza",
+      "p": 349,
+      "e": "🍕",
+      "d": "Wood-fired base, mozzarella, fresh basil.",
+      "s": true,
+      "o": 2
+    },
+    {
+      "id": "i3",
+      "n": "Chicken Biryani",
+      "p": 279,
+      "e": "🍛",
+      "d": "Fragrant basmati rice with spiced chicken.",
+      "s": false,
+      "o": 3
+    },
+    {
+      "id": "i4",
+      "n": "Veg Noodles",
+      "p": 169,
+      "e": "🍜",
+      "d": "Stir-fried noodles with crunchy veggies.",
+      "s": true,
+      "o": 4
+    },
+    {
+      "id": "i5",
+      "n": "Tacos (2 pcs)",
+      "p": 149,
+      "e": "🌮",
+      "d": "Crispy shells, salsa, and creamy filling.",
+      "s": true,
+      "o": 5
+    },
+    {
+      "id": "i6",
+      "n": "French Fries",
+      "p": 99,
+      "e": "🍟",
+      "d": "Golden, salted, and extra crispy.",
+      "s": false,
+      "o": 6
+    },
+    {
+      "id": "i7",
+      "n": "Sushi Platter",
+      "p": 449,
+      "e": "🍣",
+      "d": "Assorted rolls with soy and wasabi.",
+      "s": true,
+      "o": 7
+    },
+    {
+      "id": "i8",
+      "n": "Garden Salad",
+      "p": 129,
+      "e": "🥗",
+      "d": "Greens, tomato, cucumber, light dressing.",
+      "s": true,
+      "o": 8
+    },
+    {
+      "id": "i9",
+      "n": "Chocolate Donut",
+      "p": 79,
+      "e": "🍩",
+      "d": "Soft, glazed, and loaded with chocolate.",
+      "s": true,
+      "o": 9
+    },
+    {
+      "id": "i10",
+      "n": "Ice Cream Sundae",
+      "p": 119,
+      "e": "🍨",
+      "d": "Three scoops with sauce and sprinkles.",
+      "s": false,
+      "o": 10
+    },
+    {
+      "id": "i11",
+      "n": "Fresh Orange Juice",
+      "p": 89,
+      "e": "🍊",
+      "d": "Squeezed fresh, no added sugar.",
+      "s": true,
+      "o": 11
+    },
+    {
+      "id": "i12",
+      "n": "Iced Coffee",
+      "p": 109,
+      "e": "🧋",
+      "d": "Cold brew over ice with a splash of milk.",
+      "s": true,
+      "o": 12
+    }
+  ]
+}
