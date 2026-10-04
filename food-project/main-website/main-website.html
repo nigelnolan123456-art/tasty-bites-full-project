@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tasty Bites</title>
+<style>
+:root{--bg:#fff8f0;--card:#fff;--text:#2b2118;--muted:#7a6a5c;--accent:#e4572e;--line:#f0e2d3;--tile:#ffe9d2}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1511;--card:#271e18;--text:#f6ece2;--muted:#b3a291;--line:#3a2d24;--tile:#3a2b20}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;padding:14px 20px;background:var(--bg);border-bottom:1px solid var(--line)}
+.logo{font-weight:800;font-size:1.3rem;color:var(--accent)}
+.hero{text-align:center;padding:36px 20px 24px}
+.hero h1{margin:0 0 8px;font-size:clamp(1.8rem,5vw,2.8rem)}
+.hero p{margin:0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;max-width:1100px;margin:0 auto;padding:0 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.pic{position:relative;height:150px;display:flex;align-items:center;justify-content:center;font-size:76px;background:var(--tile)}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.card.out .pic{background:#d9d9d9}
+.card.out .pic span:first-child{filter:grayscale(1);opacity:.6}
+.card.out .pic img{filter:grayscale(1);opacity:.6}
+.badge{position:absolute;top:10px;left:10px;background:#444;color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:6px}
+.body{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.name{font-weight:700}.desc{color:var(--muted);font-size:.85rem;flex:1}
+.price{font-weight:800;font-size:1.1rem;margin-top:8px}
+.card.out .price{text-decoration:line-through;color:var(--muted)}
+.msg{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px}
+footer{text-align:center;color:var(--muted);padding:24px;font-size:.85rem;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header><div class="logo" id="logo">Tasty Bites</div></header>
+<section class="hero"><h1 id="h1"></h1><p id="sub"></p></section>
+<main class="grid" id="grid"><div class="msg">Loading…</div></main>
+<footer id="foot"></footer>
+<script>
+// Address of the backend. Change this when the backend is hosted online.
+const API = "http://localhost:3000";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+async function load() {
+  try {
+    const { config: c, items } = await (await fetch(API + "/api/menu")).json();
+    if (/^#[0-9a-f]{6}$/i.test(c.accent)) document.documentElement.style.setProperty("--accent", c.accent);
+    document.title = c.name; $("logo").textContent = c.name; $("h1").textContent = c.heading;
+    $("sub").textContent = c.sub; $("foot").textContent = c.foot;
+    items.sort((a, b) => a.o - b.o);
+    $("grid").innerHTML = items.length ? items.map(i => `<article class="card ${i.s ? "" : "out"}"><div class="pic">${i.img ? `<img src="${esc(i.img)}" alt="${esc(i.n)}">` : `<span>${esc(i.e)}</span>`}${i.s ? "" : '<span class="badge">SOLD OUT</span>'}</div><div class="body"><div class="name">${esc(i.n)}</div><div class="desc">${esc(i.d)}</div><div class="price">${esc(c.cur)}${esc(i.p)}</div></div></article>`).join("") : '<div class="msg">No items yet.</div>';
+  } catch (e) {
+    $("grid").innerHTML = '<div class="msg">Can\'t reach the server. Start the backend and refresh.</div>';
+  }
+}
+load();
+setInterval(load, 5000); // pick up admin changes automatically
+</script>
+</body>
+</html>
