@@ -2,30 +2,28 @@
 
 The public menu and admin panel use Supabase for the database, authentication, and food-image storage.
 
-## Supabase setup
+## Connected Supabase project
 
-1. Create a Supabase project.
-2. In the Supabase SQL Editor, run [`supabase/schema.sql`](supabase/schema.sql). It creates and seeds the menu tables, locks writes behind the admin allowlist, and creates the public `menu-images` storage bucket.
-3. In **Project Settings → API**, copy the Project URL and the anon/publishable key into [`supabase/config.js`](supabase/config.js). Never use or publish the `service_role` key.
-4. In **Authentication → Settings**, disable public sign-ups.
-5. Create your admin user in **Authentication → Users**. Copy that user's UUID and add it to the allowlist in the SQL Editor:
+This app is configured for the [Tasty Bites Supabase project](https://supabase.com/dashboard/project/kqqyhawmoaohuipjxphe). Its database, row-level security policies, seed menu, and `menu-images` storage bucket have been set up. The project URL and public publishable key are in [`supabase/config.js`](supabase/config.js). That key is intended for browser use; never put a `service_role` key in frontend code.
+
+## Enable admin access
+
+Public sign-ups are disabled. Create the restaurant admin account in **Authentication → Users**, then copy its UUID and add it to the admin allowlist in the SQL Editor:
 
        insert into public.admin_users (user_id)
        values ('YOUR-AUTH-USER-UUID');
 
-6. Serve `main-website/main-website.html` and `admin/admin.html` on a static host. Both pages use the shared Supabase config. The menu page is public; the admin page requires an allowlisted Supabase account.
+The admin can then log in at `admin/admin.html`. Only allowlisted users can edit menu data or upload images.
 
-The sample menu is inserted only when `menu_items` is empty. Existing rows are preserved when the schema is rerun.
+## Set up a different Supabase project
 
-## Local development
+1. In the Supabase SQL Editor, run [`supabase/schema.sql`](supabase/schema.sql). The sample menu is inserted only if `menu_items` is empty, and existing rows are preserved.
+2. Replace the project URL and public anon/publishable key in [`supabase/config.js`](supabase/config.js). Never use or publish the `service_role` key.
+3. Disable public sign-ups, create an admin user in **Authentication → Users**, then add that user's UUID to `public.admin_users` as shown above.
 
-You can open the HTML pages from a local static server or host them on GitHub Pages after making the repository public or enabling Pages on the plan. The Node server in `backend/server.js` is retained as the original standalone/local backend; the website and admin frontend now use Supabase directly.
+## Run or host the website
 
-For a quick static server with Node.js installed, run this from `food-project`:
-
-    npx serve .
-
-Then open the printed URL with `/main-website/main-website.html` or `/admin/admin.html`.
+Serve `main-website/main-website.html` and `admin/admin.html` on a static host. Both pages use the shared Supabase config. GitHub Pages for this private repository requires an eligible plan; making the repository public is another option. The Node server in `backend/server.js` is retained as the original local backend, but the website and admin frontend now use Supabase directly.
 
 ## Image uploads
 
