@@ -1,30 +1,32 @@
-# Tasty Bites: main website + admin + backend
+# Tasty Bites
 
-Three separate parts:
+The public menu and admin panel use Supabase for the database, authentication, and food-image storage.
 
-    food-project/
-      backend/server.js              the backend (API + data storage)
-      backend/package.json
-      main-website/main-website.html the public food website
-      admin/admin.html               the admin panel (password protected)
+## Supabase setup
 
-## Run it
-1. Install Node.js 18 or newer (https://nodejs.org). No other installs needed.
-2. Start the backend:
-       cd backend
-       node server.js
-   It prints: Tasty Bites backend running on http://localhost:3000
-   The first run creates backend/data.json with the starting menu. All edits are saved there.
-3. Double-click main-website/main-website.html to open the website.
-4. Double-click admin/admin.html, log in (default password: admin123) and edit anything.
-   The website updates by itself within about 5 seconds.
-5. In the admin menu items, choose a picture file to upload it. Uploaded pictures appear on the public menu; items without a picture continue to use their emoji.
+1. Create a Supabase project.
+2. In the Supabase SQL Editor, run [`supabase/schema.sql`](supabase/schema.sql). It creates and seeds the menu tables, locks writes behind the admin allowlist, and creates the public `menu-images` storage bucket.
+3. In **Project Settings → API**, copy the Project URL and the anon/publishable key into [`supabase/config.js`](supabase/config.js). Never use or publish the `service_role` key.
+4. In **Authentication → Settings**, disable public sign-ups.
+5. Create your admin user in **Authentication → Users**. Copy that user's UUID and add it to the allowlist in the SQL Editor:
 
-## Change the admin password
-    ADMIN_PASSWORD=mysecret node server.js        (Mac/Linux)
-    set ADMIN_PASSWORD=mysecret && node server.js (Windows cmd)
+       insert into public.admin_users (user_id)
+       values ('YOUR-AUTH-USER-UUID');
 
-## Putting it online later
-Host backend/ on a Node host, host the two HTML files anywhere, then change the line
-`const API = "http://localhost:3000";` at the top of both HTML files to your backend's address.
-Use a strong ADMIN_PASSWORD and HTTPS before going public.
+6. Serve `main-website/main-website.html` and `admin/admin.html` on a static host. Both pages use the shared Supabase config. The menu page is public; the admin page requires an allowlisted Supabase account.
+
+The sample menu is inserted only when `menu_items` is empty. Existing rows are preserved when the schema is rerun.
+
+## Local development
+
+You can open the HTML pages from a local static server or host them on GitHub Pages after making the repository public or enabling Pages on the plan. The Node server in `backend/server.js` is retained as the original standalone/local backend; the website and admin frontend now use Supabase directly.
+
+For a quick static server with Node.js installed, run this from `food-project`:
+
+    npx serve .
+
+Then open the printed URL with `/main-website/main-website.html` or `/admin/admin.html`.
+
+## Image uploads
+
+Admins can upload JPG, PNG, WebP, or GIF images up to 5 MB per menu item. Image files are stored in the public `menu-images` bucket; only allowlisted admins can upload, replace, or delete them.
