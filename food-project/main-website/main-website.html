@@ -35,27 +35,45 @@ footer{text-align:center;color:var(--muted);padding:24px;font-size:.85rem;border
 <section class="hero"><h1 id="h1"></h1><p id="sub"></p></section>
 <main class="grid" id="grid"><div class="msg">Loading…</div></main>
 <footer id="foot"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase/config.js"></script>
 <script>
-// Address of the backend. Change this when the backend is hosted online.
-const API = "http://localhost:3000";
-
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const credentialsConfigured = window.SUPABASE_URL && window.SUPABASE_ANON_KEY
+  && !window.SUPABASE_URL.includes("YOUR-PROJECT")
+  && !window.SUPABASE_ANON_KEY.includes("YOUR_SUPABASE");
+const supabaseClientAvailable = window.supabase && typeof window.supabase.createClient === "function";
+const configured = credentialsConfigured && supabaseClientAvailable;
+const supabaseClient = configured
+  ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY)
+  : null;
 
 async function load() {
+  if (!supabaseClient) {
+    $("grid").innerHTML = `<div class="msg">${!credentialsConfigured
+      ? "Supabase is not configured yet. Add the project URL and anon key to supabase/config.js."
+      : "Could not load the Supabase client. Check your internet connection and refresh."}</div>`;
+    return;
+  }
   try {
-    const { config: c, items } = await (await fetch(API + "/api/menu")).json();
+    const [{ data: c, error: configError }, { data: items, error: itemsError }] = await Promise.all([
+      supabaseClient.from("site_config").select("name,heading,sub,accent,cur,foot").eq("id", 1).single(),
+      supabaseClient.from("menu_items").select("id,n,p,e,d,s,o,img").order("o", { ascending: true }),
+    ]);
+    if (configError) throw configError;
+    if (itemsError) throw itemsError;
     if (/^#[0-9a-f]{6}$/i.test(c.accent)) document.documentElement.style.setProperty("--accent", c.accent);
     document.title = c.name; $("logo").textContent = c.name; $("h1").textContent = c.heading;
     $("sub").textContent = c.sub; $("foot").textContent = c.foot;
-    items.sort((a, b) => a.o - b.o);
     $("grid").innerHTML = items.length ? items.map(i => `<article class="card ${i.s ? "" : "out"}"><div class="pic">${i.img ? `<img src="${esc(i.img)}" alt="${esc(i.n)}">` : `<span>${esc(i.e)}</span>`}${i.s ? "" : '<span class="badge">SOLD OUT</span>'}</div><div class="body"><div class="name">${esc(i.n)}</div><div class="desc">${esc(i.d)}</div><div class="price">${esc(c.cur)}${esc(i.p)}</div></div></article>`).join("") : '<div class="msg">No items yet.</div>';
   } catch (e) {
-    $("grid").innerHTML = '<div class="msg">Can\'t reach the server. Start the backend and refresh.</div>';
+    console.error("Could not load menu from Supabase:", e);
+    $("grid").innerHTML = '<div class="msg">Could not load menu. Check the Supabase setup and try again.</div>';
   }
 }
 load();
-setInterval(load, 5000); // pick up admin changes automatically
+if (supabaseClient) setInterval(load, 5000); // pick up admin changes automatically
 </script>
 </body>
 </html>
