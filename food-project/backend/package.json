@@ -1,0 +1,7 @@
+{
+  "name": "tasty-bites-backend",
+  "version": "1.0.0",
+  "description": "Backend API for the Tasty Bites main website and admin panel (no dependencies)",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" }
+}
